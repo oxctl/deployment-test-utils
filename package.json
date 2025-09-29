@@ -1,0 +1,42 @@
+{
+  "name": "@oxctl/deployment-test-utils",
+  "version": "1.0.0",
+  "description": "Configuration and utility scripts to help with deployment tests",
+  "license": "MIT",
+  "author": "University of Oxford, IT Services",
+  "type": "module",
+  "main": "./dist/testUtils.cjs",
+  "module": "./dist/testUtils.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/testUtils.js",
+      "require": "./dist/testUtils.cjs"
+    },
+    "./testUtils": {
+      "import": "./dist/testUtils.js",
+      "require": "./dist/testUtils.cjs"
+    },
+    "./config": "./src/config.js"
+  },
+  "files": [
+    "dist/*",
+    "src/config.js",
+    "src/setup/*"
+  ],
+  "scripts": {
+    "build": "vite build"
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "@playwright/test": "^1.55.1",
+    "dotenv": "^16.3.1"
+  },
+  "peerDependencyMeta": {
+    "@playwright/test": { "optional": false }
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "vite": "6.3.5"
+  }
+}
