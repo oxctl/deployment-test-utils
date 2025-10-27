@@ -4,6 +4,10 @@
   "description": "Configuration and utility scripts to help with deployment tests",
   "license": "MIT",
   "author": "University of Oxford, IT Services",
+  "repository": {
+    "url": "https://github.com/oxctl/deployment-test-utils"
+  },
+  "homepage": "https://github.com/oxctl/deployment-test-utils#readme",
   "type": "module",
   "main": "./dist/testUtils.cjs",
   "module": "./dist/testUtils.js",
