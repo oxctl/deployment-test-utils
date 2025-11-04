@@ -69,7 +69,7 @@ The following must be set (locally or in CI):
  * `OAUTH_TOKEN`
  * `URL`
 
-The `CANVAS_HOST` should include the protocol, domain and port but shoulfd omit the trailing slash. The `URL` is the path of the URL with the initial slash removed.
+The `CANVAS_HOST` should include the protocol, domain and port but should omit the trailing slash. The `URL` is the path of the URL with the initial slash removed.
 Here is an example,
 
 ```bash
