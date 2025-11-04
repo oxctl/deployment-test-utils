@@ -22,9 +22,68 @@ In your consumer project (the project in which you want to run deployment tests)
 npm i @oxctl/deployment-test-utils
 ```
 
+You will also need to create a folder called `deployment`. Change into it and create a `.gitignore` file with the following contents (plus extra lines if appropriate)  
+
+```
+.env
+# Playwright outputs
+playwright-report/
+test-results/
+playwright/
+```
+Create a file called `.nvmrc` to set the Node.js version  to v22 or higher. Create a file called `package.json` 
+
+```
+{
+  "name": "deployment",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "install-browsers": "npx playwright install",
+    "test": "npx playwright test",
+    "test:ci": "CI=true npx playwright test"
+  },
+  "devDependencies": {
+    "@oxctl/deployment-test-utils": "1.0.1",
+    "@playwright/test": "^1.36.2",
+    "dotenv": "^16.3.1"
+  }
+}
+```
+then 
+
+```bash
+run npm install
+```
+Finally install [Playwright](https://playwright.dev/ "Playwright homepage")
+
+```bash
+npx playwright install
+```
+
+Set up environment variables. When running tests from a local machine, set the following in a `.env` file; if running the tests via a Github Actions, set these as project Variables or organizational Secrets.
+
+The following must be set (locally or in CI):
+ * `CANVAS_HOST`
+ * `OAUTH_TOKEN`
+ * `URL`
+
+The `CANVAS_HOST` should include the protocol, domain and port but shoulfd omit the trailing slash. The `URL` is the path of the URL with the initial slash removed.
+Here is an example,
+
+```bash
+CANVAS_HOST=https://oxeval.instructure.com
+OAUTH_TOKEN=19367~XXXXXXXXXXXXXXXXXXXXXXXX
+URL=accounts/1/external_tools/595
+```
+
+Should any of these variables be missing, `assertVariables.js` will fail.
+
+
+
 ## Usage
 
-1. Import the shared config
+1. Set up the test environment
 
 In your consumer’s `playwright.config.js`:
 
@@ -43,27 +102,29 @@ This ensures Playwright:
   - Runs the shared `setup` project (auth), then: 
   - Finally runs your deployment tests.
 
-2. Use the utilities in your tests
+2. Use the utilities when writing your deployment tests. Create file called deployment.test.js. Here's an example which looks for specific text on a page - the test(s) can be as simple or as complex as seems appropriate.
 
 ```js
-import { dismissBetaBanner, getLtiIFrame } from '@oxctl/deployment-test-utils/testUtils'
+import { test, expect } from '@playwright/test'
+import { dismissBetaBanner, getLtiIFrame, waitForNoSpinners } from '@oxctl/deployment-test-utils'
 
-test('my test', async ({ page, context }) => {
-  await page.goto(`${process.env.CANVAS_HOST}/${process.env.URL}`)
-  await dismissBetaBanner(page)
-  const ltiIFrame = getLtiIFrame(page)
-  // etc
+const host = process.env.CANVAS_HOST
+const url = process.env.URL
+
+test.describe('Test deployment', async () => {
+  await test('The tool should load and the text "XXXXXXXXXXXXXXX" should be shown', async ({context, page}) => {
+    await page.goto(`${host}/${url}`)
+    await dismissBetaBanner(page)
+    const ltiIFrame = getLtiIFrame(page)
+    await waitForNoSpinners(ltiIFrame)
+
+    // Check there's specific text on the page
+    const text = ltiIFrame.getByText("XXXXXXXXXXXXXXX")
+    await expect(text).toBeVisible();
+  })
 })
 ```
 
-3. Environment variables
-
-The following must be set (locally or in CI):
- * `CANVAS_HOST`
- * `OAUTH_TOKEN`
- * `URL`
-
-`assertVariables.js` will fail early if any are missing.
 
 4. Auth storage state
 
