@@ -74,7 +74,7 @@ Here is an example,
 
 ```bash
 CANVAS_HOST=https://wibble.instructure.com
-OAUTH_TOKEN=12345~XXXXXXXXXXXXXXXXXXXXXXXX
+OAUTH_TOKEN=12345~QWERTYUIOPASDFGHJKLZXCVBNM
 URL=accounts/1/external_tools/789
 ```
 
