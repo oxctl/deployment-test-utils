@@ -21,7 +21,7 @@ In your consumer project (the project in which you want to run deployment tests)
 ```bash
 npm i @oxctl/deployment-test-utils
 ```
-## Set Up Infrastructure
+## Set Up Local Infrastructure
 
 You should create a folder called `deployment`. Change into it and create a `.gitignore` file with the following contents (plus extra lines if appropriate)  
 
