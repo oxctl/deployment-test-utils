@@ -135,7 +135,9 @@ The setup project (`auth.setup.js`) will:
  * Write a `playwright/.auth/user.json` into the consumer repo workspace.
  * Your deployment tests (browser projects e.g. `chromium`) then reuse this state via `storageState` .
 
-⚠️ Note: In GitHub Actions this file is only created in the ephemeral job workspace and should be cleaned up automatically when the job ends. It should never be committed to source control so it is highly recommended that it is added to `.gitignore`.
+⚠️ Note: In __GitHub Actions__ this file is only created in the ephemeral job workspace and is cleaned up automatically when the job ends. It is not committed to source control, and there is no risk of leaking long-lived credentials.
+
+It is not tidied up on your local machine and should never be committed to source control so should be added to `.gitignore` (see above).
 
 ⸻
 
