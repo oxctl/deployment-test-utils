@@ -99,7 +99,9 @@ This ensures Playwright:
 
 ## Write The Tests 
 
-Use the utilities from this repository when writing your deployment tests. Create file called `deployment.test.js` which will define thetests to run. Here's an example which looks for specific text `XXXXXXXXXXXXXXX` on a page - the test(s) can be as simple or as complex as seems appropriate.
+Use the utilities from this repository when writing your deployment tests. 
+
+Create file called `deployment.test.js` which will define the tests to run. Here's an example which looks for specific text `XXXXXXXXXXXXXXX` on a page - the test(s) can be as simple or as complex as seems appropriate.
 
 ```js
 import { test, expect } from '@playwright/test'
