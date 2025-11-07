@@ -49,7 +49,7 @@ This ensures Playwright:
 import { dismissBetaBanner, getLtiIFrame } from '@oxctl/deployment-test-utils/testUtils'
 
 test('my test', async ({ page, context }) => {
-  await page.goto(`${process.env.CANVAS_HOST}/${process.env.DEPLOYMENT_TEST_URL}`)
+  await page.goto(`${process.env.CANVAS_HOST}/${process.env.URL}`)
   await dismissBetaBanner(page)
   const ltiIFrame = getLtiIFrame(page)
   // etc
@@ -61,14 +61,14 @@ test('my test', async ({ page, context }) => {
 The following must be set (locally or in CI):
  * `CANVAS_HOST`
  * `OAUTH_TOKEN`
- * `DEPLOYMENT_TEST_URL`
+ * `URL`
 
 `assertVariables.js` will fail early if any are missing.
 
 4. Auth storage state
 
 The setup project (`auth.setup.js`) will:
- * Authenticate using your token and deployment URL (`DEPLOYMENT_TEST_URL`).
+ * Authenticate using your token/URL.
  * Write a `playwright/.auth/user.json` into the consumer repo workspace.
  * Your deployment tests (browser projects e.g. `chromium`) then reuse this state via `storageState` .
 
