@@ -40,9 +40,9 @@ Any recent Playwright Test 1.x release should work; align with what you already 
 ### Environment variables
 Set the following (locally via .env, or in CI via your provider's secrets/variables):
 
-`CANVAS_HOST`
-`OAUTH_TOKEN`
-`URL`
+- `CANVAS_HOST`
+- `OAUTH_TOKEN`
+- `URL`
 
 `CANVAS_HOST` should include protocol, domain and port (no trailing slash). URL is the path without the leading slash.
 
