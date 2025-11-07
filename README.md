@@ -129,3 +129,19 @@ Then run tests as normal:
 ```bash
 npx playwright test
 ```
+
+
+## Releasing
+
+This library is published to npmjs and to make a new release do:
+
+```bash
+npm version minor
+```
+
+And then if it completes ok push the tags and GitHub actions will build and publish the package to npmjs.
+
+```bash
+git push
+git push --tags
+```
