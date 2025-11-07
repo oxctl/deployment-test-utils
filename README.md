@@ -21,56 +21,32 @@ In your consumer project (the project in which you want to run deployment tests)
 ```bash
 npm i @oxctl/deployment-test-utils
 ```
-## Set Up Local Infrastructure
-
-You should create a folder called `deployment`. Change into it and create a `.gitignore` file with the following contents (plus extra lines if appropriate)  
-
-```
-.env
-# Playwright outputs
-playwright-report/
-test-results/
-playwright/
-```
-Create a file called `.nvmrc` to set the Node.js version  to v22 or higher. Create a file called `package.json` 
-
-```
-{
-  "name": "deployment",
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "install-browsers": "npx playwright install",
-    "test": "npx playwright test",
-    "test:ci": "CI=true npx playwright test"
-  },
-  "devDependencies": {
-    "@oxctl/deployment-test-utils": "1.0.1",
-    "@playwright/test": "^1.36.2",
-    "dotenv": "^16.3.1"
-  }
-}
-```
-then generate `package-lock.json`
+## Configuration
+Add the required dev dependencies to your project (use your preferred package manager and versions):
 
 ```bash
-run npm install
+npm i -D @oxctl/deployment-test-utils @playwright/test dotenv
 ```
-Finally install [Playwright](https://playwright.dev/ "Playwright homepage")
+
+Optionally install Playwright browser binaries (if you haven't already):
 
 ```bash
 npx playwright install
 ```
 
-Set up environment variables. When running tests from a local machine, set the following in a `.env` file; if running the tests via a Github Actions, set these as project Variables or organizational Secrets.
+This library does not pin a Node.js or Playwright version. Use versions appropriate for your project.
+Any recent Playwright Test 1.x release should work; align with what you already use.
 
-The following must be set (locally or in CI):
- * `CANVAS_HOST`
- * `OAUTH_TOKEN`
- * `URL`
+### Environment variables
+Set the following (locally via .env, or in CI via your provider's secrets/variables):
 
-The `CANVAS_HOST` should include the protocol, domain and port but should omit the trailing slash. The `URL` is the path of the URL with the initial slash removed.
-Here is an example,
+`CANVAS_HOST`
+`OAUTH_TOKEN`
+`URL`
+
+`CANVAS_HOST` should include protocol, domain and port (no trailing slash). URL is the path without the leading slash.
+
+Example:
 
 ```bash
 CANVAS_HOST=https://wibble.instructure.com
@@ -78,30 +54,11 @@ OAUTH_TOKEN=12345~QWERTYUIOPASDFGHJKLZXCVBNM
 URL=accounts/1/external_tools/789
 ```
 
-Should any of these variables be missing, `assertVariables.js` will fail.
-
-Create a file called `playwright.config.js` with these contents:
-
-```js
-import { config as defaultConfig } from '@oxctl/deployment-test-utils/config'
-
-export default {
-  ...defaultConfig,
-  // you can add or override settings here
-}
-```
-
-This ensures Playwright:
-
-  - Runs the shared `assertVariables` project, then: 
-  - Runs the shared `setup` project (auth), then: 
-  - Finally runs your deployment tests.
+If any are missing, `assertVariables.js` will fail fast to help you diagnose configuration.
 
 ## Write The Tests 
 
-Use the utilities from this repository when writing your deployment tests. 
-
-Create file called `deployment.test.js` which will define the tests to run. Here's an example which looks for specific text `XXXXXXXXXXXXXXX` on a page - the test(s) can be as simple or as complex as seems appropriate.
+Use the utilities from this repository when writing your deployment tests.  Here's a simple example which asserts that some specific text, `XXXXXXXXXXXXXXX`, appears on a page. The test(s) can be as simple or as complex as seems appropriate.
 
 ```js
 import { test, expect } from '@playwright/test'
@@ -110,8 +67,8 @@ import { dismissBetaBanner, getLtiIFrame, waitForNoSpinners } from '@oxctl/deplo
 const host = process.env.CANVAS_HOST
 const url = process.env.URL
 
-test.describe('Test deployment', async () => {
-  await test('The tool should load and the text "XXXXXXXXXXXXXXX" should be shown', async ({context, page}) => {
+test.describe('Test deployment', () => {
+    test('The tool should load and the text "XXXXXXXXXXXXXXX" should be shown', async ({context, page}) => {
     await page.goto(`${host}/${url}`)
     await dismissBetaBanner(page)
     const ltiIFrame = getLtiIFrame(page)
@@ -123,7 +80,7 @@ test.describe('Test deployment', async () => {
   })
 })
 ```
-To run the tests, use 
+Run tests using your normal Playwright command (for example):
 
 ```bash
 npm run test
