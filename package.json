@@ -1,6 +1,6 @@
 {
   "name": "@oxctl/deployment-test-utils",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Configuration and utility scripts to help with deployment tests",
   "license": "MIT",
   "author": "University of Oxford, IT Services",
