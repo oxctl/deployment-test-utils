@@ -61,7 +61,7 @@ test('my test', async ({ page, context }) => {
 The following must be set (locally or in CI):
  * `CANVAS_HOST` - trailing slash is optional
  * `OAUTH_TOKEN`
- * `DEPLOYMENT_TEST_URL` 
+ * `DEPLOYMENT_TEST_URL` - leading slash is optional
 
 `assertVariables.js` will fail early if any are missing.
 
