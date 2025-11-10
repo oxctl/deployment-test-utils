@@ -134,11 +134,19 @@ npx playwright test
 
 ## Releasing
 
-This library is published to npmjs and to make a new release do:
+This library is published to npmjs. To make a new release do either:
+
+```bash
+npm version patch
+```
+for a small change, or
 
 ```bash
 npm version minor
 ```
+for a large or 'breaking' change.
+
+
 
 And then if it completes ok push the tags and GitHub actions will build and publish the package to npmjs.
 
