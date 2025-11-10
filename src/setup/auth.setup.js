@@ -9,7 +9,7 @@ const authFile = path.resolve(process.cwd(), 'playwright/.auth/user.json')
 
 const hostRaw = process.env.CANVAS_HOST || ''
 const token   = process.env.OAUTH_TOKEN
-const urlRaw  = process.env.DEPLOYMENT_TEST_URL || ''
+const urlRaw  = process.env.DEPLOYMENT_TEST_PATH || ''
 
 // Normalize: remove trailing slashes from host, and leading slashes from url
 const host = hostRaw.replace(/\/+$/, '')
