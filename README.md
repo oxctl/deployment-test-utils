@@ -49,7 +49,7 @@ This ensures Playwright:
 import { dismissBetaBanner, getLtiIFrame } from '@oxctl/deployment-test-utils/testUtils'
 
 test('my test', async ({ page, context }) => {
-  await page.goto(`${process.env.CANVAS_HOST}/${process.env.DEPLOYMENT_TEST_URL}`)
+  await page.goto(`${process.env.CANVAS_HOST}/${process.env.DEPLOYMENT_TEST_PATH}`)
   await dismissBetaBanner(page)
   const ltiIFrame = getLtiIFrame(page)
   // etc
@@ -61,7 +61,7 @@ test('my test', async ({ page, context }) => {
 The following must be set (locally or in CI):
  * `CANVAS_HOST` - trailing slash is optional
  * `OAUTH_TOKEN`
- * `DEPLOYMENT_TEST_URL` - leading slash is optional
+ * `DEPLOYMENT_TEST_PATH` - leading slash is optional
 
 `assertVariables.js` will fail early if any are missing.
 
