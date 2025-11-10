@@ -44,7 +44,7 @@ Set the following (locally via .env, or in CI via your provider's secrets/variab
 - `OAUTH_TOKEN`
 - `DEPLOYMENT_TEST_PATH`
 
-`CANVAS_HOST` should include protocol, domain and port (no trailing slash). URL is the path without the leading slash.
+`CANVAS_HOST` should include protocol, domain and port (no trailing slash). 
 
 Example:
 
