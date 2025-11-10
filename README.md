@@ -51,13 +51,17 @@ Example:
 ```bash
 CANVAS_HOST=https://wibble.instructure.com
 OAUTH_TOKEN=12345~QWERTYUIOPASDFGHJKLZXCVBNM
-URL=accounts/1/external_tools/789
+DEPLOYMENT_TEST_PATH=/accounts/1/external_tools/789
 ```
 
 If any are missing, `assertVariables.js` will fail fast to help you diagnose configuration.
 
 ## Write The Tests 
 
+The following must be set (locally or in CI):
+ * `CANVAS_HOST` - trailing slash is optional
+ * `OAUTH_TOKEN`
+ * `DEPLOYMENT_TEST_PATH` - leading slash is optional (Previously named `URL` which was changed as it was found to be confusing.)
 Use the utilities from this repository when writing your deployment tests.  Here's a simple example which asserts that some specific text, `XXXXXXXXXXXXXXX`, appears on a page. The test(s) can be as simple or as complex as seems appropriate.
 
 ```js
@@ -65,7 +69,7 @@ import { test, expect } from '@playwright/test'
 import { dismissBetaBanner, getLtiIFrame, waitForNoSpinners } from '@oxctl/deployment-test-utils'
 
 const host = process.env.CANVAS_HOST
-const url = process.env.URL
+const url = process.env.DEPLOYMENT_TEST_PATH
 
 test.describe('Test deployment', () => {
     test('The tool should load and the text "XXXXXXXXXXXXXXX" should be shown', async ({context, page}) => {

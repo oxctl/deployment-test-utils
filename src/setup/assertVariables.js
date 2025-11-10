@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import 'dotenv/config'
 
-const REQUIRED = ['CANVAS_HOST', 'OAUTH_TOKEN', 'URL']
+const REQUIRED = ['CANVAS_HOST', 'OAUTH_TOKEN', 'DEPLOYMENT_TEST_PATH']
 
 test('required environment variables are set', async () => {
   for (const key of REQUIRED) {
