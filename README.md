@@ -47,7 +47,7 @@ The following must be set (locally via .env, or in CI via your provider's secret
  * `CANVAS_HOST` - trailing slash is optional
  * `OAUTH_TOKEN`
  * `DEPLOYMENT_TEST_PATH` - leading slash is optional (Previously named `URL` which was changed as it was found to be confusing.)
-Use the utilities from this repository when writing your deployment tests.
+
 
 If any are missing, `assertVariables.js` will fail fast to help you diagnose configuration.
 
@@ -59,7 +59,7 @@ OAUTH_TOKEN=12345~QWERTYUIOPASDFGHJKLZXCVBNM
 DEPLOYMENT_TEST_PATH=/accounts/1/external_tools/789
 ```
 
-Here's a simple example which asserts that some specific text, `XXXXXXXXXXXXXXX`, appears on a page. The test(s) can be as simple or as complex as seems appropriate.
+Use the utilities from this repository when writing your deployment tests. Here's a simple example which asserts that some specific text, `XXXXXXXXXXXXXXX`, appears on a page. The test(s) can be as simple or as complex as seems appropriate.
 
 ```js
 import { test, expect } from '@playwright/test'
