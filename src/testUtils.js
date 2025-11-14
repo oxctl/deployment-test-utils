@@ -6,14 +6,9 @@ import { expect } from '@playwright/test'
 // missing the returned value will be `undefined` (assertVariables.js should
 // normally ensure these env vars exist for tests).
 export const getTestUrl = () => {
-  const host = process.env.CANVAS_HOST
-  const path = process.env.DEPLOYMENT_TEST_PATH
-  const normalizedHost = host ? String(host).trim().replace(/\/+$/, '') : ''
-  const normalizedPath = path ? String(path).trim().replace(/^\/+/, '') : ''
-  return normalizedHost
-    ? (normalizedPath ? `${normalizedHost}/${normalizedPath}` : normalizedHost)
-    : undefined
+  return String(process.env.CANVAS_HOST).trim().replace(/\/+$/, '')+"/"+String(process.env.DEPLOYMENT_TEST_PATH).trim().replace(/^\/+/, '')
 }
+
 export const login = async (request, page, host, token) => {
   await Promise.resolve(
     await request.get(`${host}/login/session_token`, {
