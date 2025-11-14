@@ -1,24 +1,19 @@
 import { expect } from '@playwright/test'
 
-const host = process.env.CANVAS_HOST
-const path = process.env.DEPLOYMENT_TEST_PATH
-
 // Normalise and join host and path into a valid URL.
 // Trim whitespace from host and path, remove trailing slashes from host and
 // leading slashes from path, then join with a single '/'. If `host` is
 // missing the returned value will be `undefined` (assertVariables.js should
 // normally ensure these env vars exist for tests).
-const normalizedHost = host ? String(host).trim().replace(/\/+$/, '') : ''
-const normalizedPath = path ? String(path).trim().replace(/^\/+/, '') : ''
-const url = normalizedHost
-  ? (normalizedPath ? `${normalizedHost}/${normalizedPath}` : normalizedHost)
-  : undefined
-
-export const getTestUrl = () => url
-
-
-
-
+export const getTestUrl = () => {
+  const host = process.env.CANVAS_HOST
+  const path = process.env.DEPLOYMENT_TEST_PATH
+  const normalizedHost = host ? String(host).trim().replace(/\/+$/, '') : ''
+  const normalizedPath = path ? String(path).trim().replace(/^\/+/, '') : ''
+  return normalizedHost
+    ? (normalizedPath ? `${normalizedHost}/${normalizedPath}` : normalizedHost)
+    : undefined
+}
 export const login = async (request, page, host, token) => {
   await Promise.resolve(
     await request.get(`${host}/login/session_token`, {
