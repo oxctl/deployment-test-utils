@@ -2,9 +2,8 @@ import { expect } from '@playwright/test'
 
 // Normalise and join host and path into a valid URL.
 // Trim whitespace from host and path, remove trailing slashes from host and
-// leading slashes from path, then join with a single '/'. If `host` is
-// missing the returned value will be `undefined` (assertVariables.js should
-// normally ensure these env vars exist for tests).
+// leading slashes from path, then join with a single '/' (assertVariables.js will
+//  ensure these env vars exist for tests).
 export const getTestUrl = () => {
   return String(process.env.CANVAS_HOST).trim().replace(/\/+$/, '')+"/"+String(process.env.DEPLOYMENT_TEST_PATH).trim().replace(/^\/+/, '')
 }
