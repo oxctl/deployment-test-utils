@@ -63,14 +63,11 @@ Use the utilities from this repository when writing your deployment tests. Here'
 
 ```js
 import { test, expect } from '@playwright/test'
-import { dismissBetaBanner, getLtiIFrame, waitForNoSpinners } from '@oxctl/deployment-test-utils'
-
-const host = process.env.CANVAS_HOST
-const url = process.env.TEST_PATH
+import { dismissBetaBanner, getLtiIFrame, waitForNoSpinners, TEST_URL } from '@oxctl/deployment-test-utils'
 
 test.describe('Test deployment', () => {
     test('The tool should load and the text "XXXXXXXXXXXXXXX" should be shown', async ({context, page}) => {
-    await page.goto(`${host}/${url}`)
+    await page.goto(TEST_URL)
     await dismissBetaBanner(page)
     const ltiIFrame = getLtiIFrame(page)
     await waitForNoSpinners(ltiIFrame)
