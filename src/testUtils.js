@@ -2,7 +2,7 @@ import { expect } from '@playwright/test'
 
 // Return a valid URL of the test course or account - assertVariables.js will
 //  ensure these env vars exist and are normalised.
-export const TEST_URL = process.env.CANVAS_HOST + "/" + process.env.DEPLOYMENT_TEST_PATH
+export const TEST_URL = process.env.CANVAS_HOST + "/" + process.env.TEST_PATH
 
 
 export const login = async (request, page, host, token) => {
