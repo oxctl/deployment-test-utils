@@ -132,6 +132,7 @@ export const dismissBetaBanner = async (page) => {
  *
  * @param {import('@playwright/test').FrameLocator} frameLocator - Frame locator to query
  * @param {number} [initialDelay=1000] - milliseconds to wait before starting checks
+ * @returns {Promise<void>}
  */
 export const waitForNoSpinners = async (frameLocator, initialDelay = 1000) => {
   await new Promise(r => setTimeout(r, initialDelay))
