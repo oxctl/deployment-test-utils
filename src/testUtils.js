@@ -118,6 +118,7 @@ export const screenshot = async (locator, testInfo) => {
 /**
  * Dismiss the beta warning banner if present on the current page.
  * @param {import('@playwright/test').Page} page - Playwright page
+ * @returns {Promise<void>}
  */
 export const dismissBetaBanner = async (page) => {
   if (page.url().includes('beta')) {
