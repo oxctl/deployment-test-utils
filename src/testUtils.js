@@ -45,6 +45,7 @@ export const login = async (request, page, host, token) => {
  * @param {import('@playwright/test').Page} page - Playwright page instance
  * @param {import('@playwright/test').BrowserContext} context - Playwright browser context
  * @param {string} toolUrl - URL of the LTI tool to visit
+ * @returns {Promise<void>}
  */
 export const grantAccessIfNeeded = async (page, context, toolUrl) => {
   await page.goto(toolUrl)
