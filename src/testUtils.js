@@ -109,6 +109,7 @@ let screenshotCount = 1
  *
  * @param {import('@playwright/test').Locator} locator - Locator to screenshot
  * @param {{ outputDir: string }} testInfo - Playwright `testInfo` object (only `outputDir` used)
+ * @returns {Promise<void>}
  */
 export const screenshot = async (locator, testInfo) => {
   await locator.screenshot({ path: `${testInfo.outputDir}/${screenshotCount}.png`, fullPage: true })
