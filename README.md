@@ -83,6 +83,62 @@ Run tests using your normal Playwright command (for example):
 ```bash
 npm run test
 ```
+
+## Helper overview
+
+This package exposes a small set of helpers that work together to drive a Canvas LTI launch in your deployment tests.
+
+### Environment and URL
+
+The required environment variables described above are:
+
+- `CANVAS_HOST` – base Canvas URL, e.g. `https://canvas.instructure.com` (or the corresponding beta/test host).
+- `TEST_PATH` – path under Canvas for the page you want to exercise, e.g. `/accounts/1/external_tools/789`.
+- `OAUTH_TOKEN` – bearer token used to obtain a Canvas login session for the tests.
+
+From these, the library builds a normalised test URL:
+
+```js
+import { TEST_URL } from '@oxctl/deployment-test-utils'
+
+// TEST_URL === `${CANVAS_HOST}/${TEST_PATH}`
+```
+
+### Core helpers
+
+The main helpers are:
+
+- `TEST_URL` – normalised URL for the Canvas page under test.
+- `login(request, page, host, token)` – perform an LTI login by exchanging the OAuth token for a session and navigating the Playwright `page` to it. This is typically called from the setup project rather than directly from individual tests.
+- `grantAccessIfNeeded(page, context, toolUrl)` – visit the LTI tool and complete the grant-access flow if the tool requires it. This is also usually invoked from setup, not from the test body.
+- `getLtiIFrame(page)` – return a `FrameLocator` for the LTI launch iframe.
+- `waitForNoSpinners(frameLocator, initialDelay?)` – wait for `.view-spinner` elements inside the frame to disappear.
+
+### End-to-end example
+
+A typical deployment test might look like this:
+
+```js
+import { test } from '@playwright/test'
+import {
+  TEST_URL,
+  getLtiIFrame,
+  waitForNoSpinners
+} from '@oxctl/deployment-test-utils'
+
+// Auth and LTI grant access are handled by the setup projects from this package.
+
+test('launches the tool via Canvas', async ({ page }) => {
+  await page.goto(TEST_URL)
+
+  const frame = getLtiIFrame(page)
+  await waitForNoSpinners(frame)
+
+  // Now interact with the tool inside the LTI iframe
+  await frame.getByText('XXXXXXXXXXXXXXX').click()
+})
+```
+
 ## Auth storage state
 
 The setup project (`auth.setup.js`) will:
