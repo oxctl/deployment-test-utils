@@ -33,7 +33,7 @@
   },
   "sideEffects": false,
   "peerDependencies": {
-    "@playwright/test": "^1.55.1",
+    "@playwright/test": ">=1.36.0 <1.58.0",
     "dotenv": "^16.3.1"
   },
   "peerDependencyMeta": {

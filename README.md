@@ -28,6 +28,9 @@ Add the required dev dependencies to your project (use your preferred package ma
 npm i -D @oxctl/deployment-test-utils @playwright/test dotenv
 ```
 
+> [!NOTE] 
+> Playwright 1.58.0 introduced a [bug](https://github.com/microsoft/playwright/issues/39172) that causes duplicate test title errors. This version of the library constrains Playwright to <1.58.0 to avoid this issue, but if you are using a later version of Playwright in your project, you may need to adjust the version in your `package.json` to avoid conflicts.
+
 Optionally install Playwright browser binaries (if you haven't already):
 
 ```bash
