@@ -18,21 +18,22 @@ export const TEST_URL = process.env.CANVAS_HOST + '/' + process.env.TEST_PATH
  * @returns {Promise<void>}
  */
 export const login = async (request, page, host, token) => {
-  await Promise.resolve(
-    await request.get(`${host}/login/session_token`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    }).then(async (response) => {
-      const json = await response.json()
-      const sessionUrl = json.session_url
-      return page.goto(sessionUrl)
-    }).catch(error => {
-      console.error('Login request failed:', error)
-      throw error
-    })
-  )
+  const response = await request.get(`${host}/login/session_token`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const json = await response.json()
+  const sessionUrl = new URL(json.session_url)
+
+  // remove anything sensitive before using it for navigation/logging
+  sessionUrl.searchParams.delete('session_token')
+  sessionUrl.searchParams.delete('token')
+  sessionUrl.searchParams.delete('code')
+
+  await page.goto(sessionUrl.toString())
 }
 
 
