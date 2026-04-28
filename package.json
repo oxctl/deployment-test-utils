@@ -31,6 +31,9 @@
   "scripts": {
     "build": "vite build"
   },
+  "bin": {
+    "deployment-generate-auth": "./bin/auth.setup.js"
+  },
   "sideEffects": false,
   "peerDependencies": {
     "@playwright/test": ">=1.36.0 <1.58.0",

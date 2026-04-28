@@ -4,22 +4,18 @@ Shared configuration and utility scripts to support Canvas LTI tool deployment (
 
 This package provides:
 
- * Playwright configuration (`config.js`)
-   - Includes `assertVariables` and `setup` projects that run before your deployment tests.
- * Setup scripts under `src/setup/`
-   - `assertVariables.js` – ensures required environment variables are set.
-   - `auth.setup.js` – authenticates and writes a temporary Playwright `storageState` for your tests.
- * Reusable test utilities (`testUtils.js`)
-   - Helpers for logging in, handling banners, waiting for spinners, etc.
+ * A pre-test authentication CLI (deployment-generate-auth)
+ * A shared Playwright config
+ * A small set of test utilities (helpers for logging in, handling banners, waiting for spinners, etc.)
 
-⸻
+Authentication is performed outside of Playwright tests and persisted via `storageState`, avoiding token leakage in reports. 
 
 ## Installation
 
 In your consumer project (the project in which you want to run deployment tests):
 
 ```bash
-npm i @oxctl/deployment-test-utils
+npm i -D @oxctl/deployment-test-utils
 ```
 ## Configuration
 Add the required dev dependencies to your project (use your preferred package manager and versions):
@@ -28,31 +24,23 @@ Add the required dev dependencies to your project (use your preferred package ma
 npm i -D @oxctl/deployment-test-utils @playwright/test dotenv
 ```
 
-> [!NOTE] 
-> Playwright 1.58.0 introduced a [bug](https://github.com/microsoft/playwright/issues/39172) that causes duplicate test title errors. This version of the library constrains Playwright to <1.58.0 to avoid this issue, but if you are using a later version of Playwright in your project, you may need to adjust the version in your `package.json` to avoid conflicts.
-
 Optionally install Playwright browser binaries (if you haven't already):
 
 ```bash
 npx playwright install
 ```
 
-This library does not pin a Node.js or Playwright version. Use versions appropriate for your project.
-Any recent Playwright Test 1.x release should work; align with what you already use.
+This library does not pin a Node.js version. Use a version appropriate for your project.
 
+> [!NOTE]
+> Playwright 1.58.0 introduced a [bug](https://github.com/microsoft/playwright/issues/39172) that causes duplicate test title errors. This version of the library constrains Playwright to <1.58.0 to avoid this issue, but if you are using a later version of Playwright in your project, you may need to adjust the version in your `package.json` to avoid conflicts.
 
+## Environment variables
 
-
-
-## Write The Tests 
-
-The following must be set (locally via .env, or in CI via your provider's secrets/variables):
+The following must be set (locally via `.env`, or in CI via your provider's secrets/variables):
  * `CANVAS_HOST` - trailing slash is optional
  * `OAUTH_TOKEN`
  * `TEST_PATH` - leading slash is optional (Previously named `URL` which was changed as it was found to be confusing.)
-
-
-If any are missing, `assertVariables.js` will fail fast to help you diagnose configuration.
 
 Example:
 
@@ -61,6 +49,33 @@ CANVAS_HOST=https://wibble.instructure.com
 OAUTH_TOKEN=12345~QWERTYUIOPASDFGHJKLZXCVBNM
 TEST_PATH=/accounts/1/external_tools/789
 ```
+
+## Authentication (pre-test step)
+
+This package exposes a CLI, `deployment-generate-auth`
+It will:
+
+1. Validate required environment variables
+2. Request a session token
+3. Launch a browser and establish a session
+4. Save Playwright `storageState` to: `playwright/.auth/user.json` in the consumer repo workspace
+
+⚠️ Note: In __GitHub Actions__ this file is only created in the ephemeral job workspace and is cleaned up automatically when the job ends. It is not committed to source control, and there is no risk of leaking long-lived credentials.
+
+It is not tidied up on your local machine and should never be committed to source control so should be added to `.gitignore`.
+
+## Playwright config
+
+```javascript
+import { config } from '@oxctl/deployment-test-utils'
+
+export default config
+```
+The config:
+  * Loads `.env`
+  * Uses the generated `storageState`
+
+## Write The Tests
 
 Use the utilities from this repository when writing your deployment tests. Here's a simple example which asserts that some specific text, `XXXXXXXXXXXXXXX`, appears on a page. The test(s) can be as simple or as complex as seems appropriate.
 
@@ -81,33 +96,34 @@ test.describe('Test deployment', () => {
   })
 })
 ```
-Run tests using your normal Playwright command (for example):
+
+## Recommended npm scripts
 
 ```bash
-npm run test
+{
+  "scripts": {
+    "pretest": "deployment-generate-auth",
+    "test": "playwright test",
+    "test:ci": "CI=true npm test",
+    "test:ui": "npm test -- --ui",
+    "test:report": "playwright show-report"
+  }
+}
 ```
-## Auth storage state
 
-The setup project (`auth.setup.js`) will:
- * Authenticate using your token/URL.
- * Write a `playwright/.auth/user.json` into the consumer repo workspace.
- * Your deployment tests (browser projects e.g. `chromium`) then reuse this state via `storageState` .
-
-⚠️ Note: In __GitHub Actions__ this file is only created in the ephemeral job workspace and is cleaned up automatically when the job ends. It is not committed to source control, and there is no risk of leaking long-lived credentials.
-
-It is not tidied up on your local machine and should never be committed to source control so should be added to `.gitignore` (see above).
-
-⸻
+This ensures auth always runs before tests.
 
 ## Project structure
 
 ```
 src/
-├── config.js          # exports Playwright projects
-├── testUtils.js       # reusable Playwright helpers
-└── setup/
-├── assertVariables.js
-└── auth.setup.js
+├── config.js          # shared Playwright config (loads dotenv, sets `storageState`)
+├── testUtils.js       # reusable Playwright helpers and `TEST_URL`
+├── shared/
+│   └── url.js         # pure helpers for normalising/building URLs
+
+bin/
+└── auth.setup.js      # CLI: generates authenticated `storageState`
 ```
 
 ## Development
