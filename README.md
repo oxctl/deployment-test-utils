@@ -99,7 +99,7 @@ test.describe('Test deployment', () => {
 
 ## Recommended npm scripts
 
-```bash
+```json
 {
   "scripts": {
     "pretest": "deployment-generate-auth",
