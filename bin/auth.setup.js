@@ -55,6 +55,14 @@ async function main() {
   await page.goto(session_url)
   await page.goto(buildTestUrl(host, testPath))
 
+  const check = await page.request.get(`${host}/api/v1/users/self`)
+
+  if (!check.ok()) {
+    console.error('Authentication check failed')
+    console.error(await check.text())
+    process.exit(1)
+  }
+
   await context.storageState({path: authFile})
 
   await browser.close()
