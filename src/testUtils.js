@@ -1,40 +1,14 @@
 import { expect } from '@playwright/test'
+import { buildTestUrl } from './shared/url.js'
 
 /**
  * Normalised test URL built from `CANVAS_HOST` and `TEST_PATH`.
- * `src/setup/assertVariables.js` ensures these env vars exist and are normalised.
  * @type {string}
  */
-export const TEST_URL = process.env.CANVAS_HOST + '/' + process.env.TEST_PATH
-
-
-/**
- * Perform an LTI login by requesting a session token and navigating the page
- * to the returned session URL.
- * @param {import('@playwright/test').APIRequestContext} request - Playwright request context
- * @param {import('@playwright/test').Page} page - Playwright page to navigate
- * @param {string} host - Canvas host (base URL)
- * @param {string} token - OAuth bearer token
- * @returns {Promise<void>}
- */
-export const login = async (request, page, host, token) => {
-  await Promise.resolve(
-    await request.get(`${host}/login/session_token`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    }).then(async (response) => {
-      const json = await response.json()
-      const sessionUrl = json.session_url
-      return page.goto(sessionUrl)
-    }).catch(error => {
-      console.error('Login request failed:', error)
-      throw error
-    })
-  )
-}
-
+export const TEST_URL = buildTestUrl(
+  process.env.CANVAS_HOST,
+  process.env.TEST_PATH
+)
 
 /**
  * Visit `toolUrl` and complete the grant-access flow if the tool requests it.
@@ -125,7 +99,7 @@ export const dismissBetaBanner = async (page) => {
   if (page.url().includes('beta')) {
     const banner = page.getByRole('button', { name: 'Close warning' })
     if (await banner.isVisible()) {
-      await page.getByRole('button', { name: 'Close warning' }).click()
+      await banner.click()
     }
   }
 }

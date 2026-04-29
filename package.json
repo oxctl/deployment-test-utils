@@ -24,12 +24,15 @@
     "./config": "./src/config.js"
   },
   "files": [
+    "bin/*",
     "dist/*",
-    "src/config.js",
-    "src/setup/*"
+    "src/config.js"
   ],
   "scripts": {
     "build": "vite build"
+  },
+  "bin": {
+    "deployment-generate-auth": "./bin/auth.setup.js"
   },
   "sideEffects": false,
   "peerDependencies": {

@@ -4,9 +4,12 @@ import { resolve } from 'path'
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/testUtils.js'),
+      entry: {
+        testUtils: resolve(__dirname, 'src/testUtils.js'),
+        url: resolve(__dirname, 'src/shared/url.js')
+      },
       formats: ['es', 'cjs'],
-      fileName: (format) => `testUtils.${format === 'es' ? 'js' : 'cjs'}`
+      fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'js' : 'cjs'}`
     },
     rollupOptions: {
       external: [
