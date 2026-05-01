@@ -3,7 +3,6 @@ import {chromium, request} from 'playwright'
 import fs from 'fs/promises'
 import path from 'path'
 import 'dotenv/config'
-import { buildTestUrl } from '../dist/url.js'
 
 const host = process.env.CANVAS_HOST
 const token = process.env.OAUTH_TOKEN
@@ -42,7 +41,18 @@ async function main() {
     const status = response.status()
     const body = await response.text()
     console.error(`Failed to fetch session token: HTTP ${status}`)
-    console.error(`Response body: ${body}`)
+
+    if (status === 401 || status === 403) {
+      console.error('Authentication failed: your OAUTH_TOKEN is likely invalid or expired.')
+    } else if (status === 404) {
+      console.error('Endpoint not found: check CANVAS_HOST is correct.')
+    } else if (status >= 500) {
+      console.error('Canvas server error: please try again later or check service status.')
+    } else {
+      console.error('Unexpected response from Canvas when requesting session token.')
+      console.error(`Response body: ${body}`)
+    }
+
     process.exit(1)
   }
 
@@ -51,12 +61,9 @@ async function main() {
   const browser = await chromium.launch()
   const context = await browser.newContext()
   const page = await context.newPage()
-
   await page.goto(session_url)
-  await page.goto(buildTestUrl(host, testPath))
 
   const check = await page.request.get(`${host}/api/v1/users/self`)
-
   if (!check.ok()) {
     console.error('Authentication check failed')
     console.error(await check.text())

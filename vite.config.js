@@ -5,8 +5,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        testUtils: resolve(__dirname, 'src/testUtils.js'),
-        url: resolve(__dirname, 'src/shared/url.js')
+        testUtils: resolve(__dirname, 'src/testUtils.js')
       },
       formats: ['es', 'cjs'],
       fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'js' : 'cjs'}`
