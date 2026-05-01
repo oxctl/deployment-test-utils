@@ -77,16 +77,19 @@ The config:
 
 ## Write The Tests
 
+## Write The Tests
+
 Use the utilities from this repository when writing your deployment tests. Here's a simple example which asserts that some specific text, `XXXXXXXXXXXXXXX`, appears on a page. The test(s) can be as simple or as complex as seems appropriate.
 
-```js
-import { test, expect } from '@playwright/test'
-import { dismissBetaBanner, getLtiIFrame, waitForNoSpinners, TEST_URL } from '@oxctl/deployment-test-utils'
+```javascript
+import { dismissBetaBanner, getLtiIFrame, waitForNoSpinners, grantAccessIfNeeded, TEST_URL } from '@oxctl/deployment-test-utils'
 
 test.describe('Test deployment', () => {
     test('The tool should load and the text "XXXXXXXXXXXXXXX" should be shown', async ({context, page}) => {
     await page.goto(TEST_URL)
     await dismissBetaBanner(page)
+    // Handle LTI “Grant Access” flow if required
+    await grantAccessIfNeeded(page, context, TEST_URL)
     const ltiIFrame = getLtiIFrame(page)
     await waitForNoSpinners(ltiIFrame)
 
@@ -96,6 +99,8 @@ test.describe('Test deployment', () => {
   })
 })
 ```
+
+If your LTI tool requires the user to grant access, you must call `grantAccessIfNeeded` in your tests. This is no longer handled during authentication setup.
 
 ## Recommended npm scripts
 

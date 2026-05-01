@@ -1,5 +1,4 @@
 import { expect } from '@playwright/test'
-import { buildTestUrl } from './shared/url.js'
 
 /**
  * Normalised test URL built from `CANVAS_HOST` and `TEST_PATH`.
@@ -115,4 +114,16 @@ export const dismissBetaBanner = async (page) => {
 export const waitForNoSpinners = async (frameLocator, initialDelay = 1000) => {
   await new Promise(r => setTimeout(r, initialDelay))
   await expect(frameLocator.locator('.view-spinner')).toHaveCount(0, { timeout: 10000 })
+}
+
+function normalizeUrlParts(host, path) {
+  return {
+    host: host.trim().replace(/\/+$/, ''),
+    path: path.trim().replace(/^\/+/, '')
+  }
+}
+
+function buildTestUrl(host, path) {
+  const { host: normalizedHost, path: normalizedPath } = normalizeUrlParts(host, path)
+  return `${normalizedHost}/${normalizedPath}`
 }
