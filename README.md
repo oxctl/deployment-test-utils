@@ -27,7 +27,7 @@ npm i -D @oxctl/deployment-test-utils @playwright/test dotenv
 Optionally install Playwright browser binaries (if you haven't already):
 
 ```bash
-npx playwright install --with-deps chromium
+npx playwright install
 ```
 
 This library does not pin a Node.js version. Use a version appropriate for your project.
@@ -105,6 +105,7 @@ If your LTI tool requires the user to grant access, you must call `grantAccessIf
 ```json
 {
   "scripts": {
+    "install-browsers": "npx playwright install --with-deps chromium",
     "pretest": "deployment-generate-auth",
     "test": "playwright test",
     "test:ci": "CI=true npm test",
