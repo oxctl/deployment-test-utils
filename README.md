@@ -31,16 +31,14 @@ npx playwright install
 ```
 
 This library does not pin a Node.js version. Use a version appropriate for your project.
-
-> [!NOTE]
-> Playwright 1.58.0 introduced a [bug](https://github.com/microsoft/playwright/issues/39172) that causes duplicate test title errors. This version of the library constrains Playwright to <1.58.0 to avoid this issue, but if you are using a later version of Playwright in your project, you may need to adjust the version in your `package.json` to avoid conflicts.
+Requires @playwright/test >= 1.60.0 due to a browser install hang affecting older Playwright versions on Node 24.16+.
 
 ## Environment variables
 
 The following must be set (locally via `.env`, or in CI via your provider's secrets/variables):
  * `CANVAS_HOST` - trailing slash is optional
  * `OAUTH_TOKEN`
- * `TEST_PATH` - leading slash is optional (Previously named `URL` which was changed as it was found to be confusing.)
+ * `TEST_PATH` - leading slash is optional
 
 Example:
 
@@ -107,6 +105,7 @@ If your LTI tool requires the user to grant access, you must call `grantAccessIf
 ```json
 {
   "scripts": {
+    "install-browsers": "npx playwright install --with-deps chromium",
     "pretest": "deployment-generate-auth",
     "test": "playwright test",
     "test:ci": "CI=true npm test",
@@ -155,21 +154,26 @@ npx playwright test
 
 ## Releasing
 
-This library is published to npmjs. To make a new release do either:
+This library is published to npmjs. To make a new release run:
 
 ```bash
 npm version patch
 ```
-for a small change, or
+or
 
 ```bash
 npm version minor
 ```
-for a large or 'breaking' change.
 
+or
 
+```bash
+npm version major
+```
 
-And then if it completes ok push the tags and GitHub actions will build and publish the package to npmjs.
+according to semver conventions.
+
+If it completes ok, push the tags and GitHub actions will build and publish the package to npmjs:
 
 ```bash
 git push
