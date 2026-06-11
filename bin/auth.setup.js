@@ -61,7 +61,12 @@ async function main() {
   const browser = await chromium.launch()
   const context = await browser.newContext()
   const page = await context.newPage()
-  await page.goto(session_url)
+  try {
+    await page.goto(session_url, { waitUntil: 'commit', timeout: 15000 })
+  } catch {
+    // sanitize error to avoid leaking token
+    throw new Error('Failed to establish the Canvas session during auth. Check CANVAS_HOST, OAUTH_TOKEN, and network access.')
+  }
 
   const check = await page.request.get(`${host}/api/v1/users/self`)
   if (!check.ok()) {
