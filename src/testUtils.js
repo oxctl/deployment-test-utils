@@ -10,36 +10,48 @@ export const TEST_URL = buildTestUrl(
 )
 
 /**
+ * @typedef {Object} GrantAccessOptions
+ * @property {'lti'|'page'} [scope='lti'] - Where the tool renders. Defaults to existing LTI behavior.
+ * @property {number} [promptTimeoutMs=3000] - Max wait for "Please Grant Access" prompt.
+ */
+
+/**
  * Visit `toolUrl` and complete the grant-access flow if the tool requests it.
- * Navigates the page into the LTI tool, waits for loading to finish and
- * resolves whether the tool requires an explicit grant. If required, the
- * `grantAccess` helper is used to complete the flow.
+ * Backward compatible: defaults to LTI iframe flow.
  *
  * @param {import('@playwright/test').Page} page - Playwright page instance
  * @param {import('@playwright/test').BrowserContext} context - Playwright browser context
  * @param {string} toolUrl - URL of the LTI tool to visit
+ * @param {GrantAccessOptions} [options]
  * @returns {Promise<void>}
  */
-export const grantAccessIfNeeded = async (page, context, toolUrl) => {
-  await page.goto(toolUrl)
-  const ltiToolFrame = getLtiIFrame(page)
+export const grantAccessIfNeeded = async (page, context, toolUrl, options = {}) => {
+  const { scope = 'lti', promptTimeoutMs = 3000 } = options
 
-  // wait for tool-support loading page
-  await ltiToolFrame.getByText('Loading...').waitFor({
-    state: 'detached',
-    timeout: 5000,
-    strict: false
-  })
+  await page.goto(toolUrl)
+  const scopeRoot = scope === 'lti' ? getLtiIFrame(page) : page
+
+  // LTI tools commonly show a temporary loading screen inside the iframe.
+  if (scope === 'lti') {
+    await scopeRoot.getByText('Loading...').waitFor({
+      state: 'detached',
+      timeout: 5000,
+      strict: false
+    })
+  }
 
   const needsGrantAccess = await Promise.race([
-    ltiToolFrame.getByText('Please Grant Access').waitFor()
+    scopeRoot.getByText('Please Grant Access').waitFor({
+      state: 'visible',
+      timeout: promptTimeoutMs
+    })
       .then(() => { return true }),
-    waitForNoSpinners(ltiToolFrame, 3000)
+    waitForNoSpinners(scopeRoot, 3000)
       .then(() => { return false })
   ])
 
   if (needsGrantAccess) {
-    await grantAccess(context, ltiToolFrame)
+    await grantAccess(context, scopeRoot)
   }
 }
 
@@ -48,17 +60,17 @@ export const grantAccessIfNeeded = async (page, context, toolUrl) => {
  * popup page. Intended to be used by `grantAccessIfNeeded`.
  *
  * @param {import('@playwright/test').BrowserContext} context - Playwright browser context
- * @param {import('@playwright/test').FrameLocator} frameLocator - Locator for the LTI frame
+ * @param {import('@playwright/test').FrameLocator | import('@playwright/test').Page} scopeRoot - LTI frame or page root
  * @returns {Promise<void>}
  */
-const grantAccess = async (context, frameLocator) => {
-  const button = await frameLocator.getByRole('button')
+const grantAccess = async (context, scopeRoot) => {
+  const button = scopeRoot.getByRole('button').first()
   const [newPage] = await Promise.all([
     context.waitForEvent('page'),
     button.click()
   ])
 
-  const submit = await newPage.getByRole('button', { name: /Authori[sz]e/ })
+  const submit = await newPage.getByRole('button', { name: /Authori[sz]e/i })
   await submit.click()
   const close = await newPage.getByText('Close', { exact: true })
   await close.click()
@@ -107,7 +119,7 @@ export const dismissBetaBanner = async (page) => {
  * Wait for any `.view-spinner` elements inside the supplied frame locator to
  * disappear. Optionally provide an initial delay before checking.
  *
- * @param {import('@playwright/test').FrameLocator} frameLocator - Frame locator to query
+ * @param {import('@playwright/test').FrameLocator | import('@playwright/test').Page} frameLocator - Frame locator or page to query
  * @param {number} [initialDelay=1000] - milliseconds to wait before starting checks
  * @returns {Promise<void>}
  */
