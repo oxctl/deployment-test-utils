@@ -17,14 +17,11 @@ export const TEST_URL = buildTestUrl(
  *
  * @param {import('@playwright/test').Page} page - Playwright page instance
  * @param {import('@playwright/test').BrowserContext} context - Playwright browser context
- * @param {string} toolUrl - URL of the LTI tool to visit
- * @param {{shouldNavigate?: boolean}} [options] - Optional configuration
- * @param {boolean} [options.shouldNavigate=true] - Whether to navigate to toolUrl (default true)
+ * @param {string} [toolUrl] - Optional URL of the LTI tool to visit
  * @returns {Promise<void>}
  */
-export const grantAccessIfNeeded = async (page, context, toolUrl, options = {}) => {
-  const { shouldNavigate = true } = options
-  if (shouldNavigate) {
+export const grantAccessIfNeeded = async (page, context, toolUrl) => {
+  if (toolUrl) {
     await page.goto(toolUrl)
   }
   const ltiToolFrame = getLtiIFrame(page)
@@ -134,24 +131,17 @@ function buildTestUrl(host, path) {
 }
 
 /**
- * Dismiss the OneTrust cookie dialog by accepting cookies if the banner appears.
+ * Register a Playwright locator handler that accepts the OneTrust cookie dialog
+ * whenever it appears on the page.
+ *
+ * Call this once per test/page in consumer setup (for example in `beforeEach`).
+ *
  * @param {import('@playwright/test').Page} page - Playwright page
- * @param {number} [timeoutMs=3000] - Max wait for the dialog accept button
  * @returns {Promise<void>}
  */
-export const dismissCookieDialog = async (page, timeoutMs = 3000) => {
+export const registerCookieDialogHandler = async (page) => {
   const dialog = page.getByRole('dialog', { name: 'Cookie Settings' })
-  const dialogVisible = await dialog
-    .waitFor({ state: 'visible', timeout: timeoutMs })
-    .then(() => { return true })
-    .catch(() => { return false })
-
-  if (!dialogVisible) {
-    return
-  }
-
-  const acceptButton = dialog.getByRole('button', { name: 'Accept' }).first()
-  if (await acceptButton.isVisible()) {
-    await acceptButton.click()
-  }
+  await page.addLocatorHandler(dialog, async () => {
+    await dialog.getByRole('button', { name: 'Accept' }).first().click()
+  })
 }

@@ -102,13 +102,25 @@ If your LTI tool requires the user to grant access, you must call `grantAccessIf
 
 ### Optional: Skip page navigation in `grantAccessIfNeeded`
 
-By default, `grantAccessIfNeeded` navigates to the tool URL. If your test has already navigated to the tool, pass `{ shouldNavigate: false }` to skip the navigation step:
+If `toolUrl` is provided, `grantAccessIfNeeded` navigates to it. If your test has already navigated to the tool, omit `toolUrl` to skip the navigation step:
 
 ```javascript
 // Already at the tool URL
 await page.goto(TEST_URL)
 // Check for grant access flow without re-navigating
-await grantAccessIfNeeded(page, context, TEST_URL, { shouldNavigate: false })
+await grantAccessIfNeeded(page, context)
+```
+
+### Optional: Register a cookie-dialog handler once per test
+
+If your environment shows the OneTrust cookie dialog unpredictably, register a locator handler in test setup so it is auto-accepted whenever it appears:
+
+```javascript
+import { registerCookieDialogHandler } from '@oxctl/deployment-test-utils'
+
+test.beforeEach(async ({ page }) => {
+  await registerCookieDialogHandler(page)
+})
 ```
 
 ## Recommended npm scripts
