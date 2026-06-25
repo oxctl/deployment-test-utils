@@ -18,10 +18,15 @@ export const TEST_URL = buildTestUrl(
  * @param {import('@playwright/test').Page} page - Playwright page instance
  * @param {import('@playwright/test').BrowserContext} context - Playwright browser context
  * @param {string} toolUrl - URL of the LTI tool to visit
+ * @param {{shouldNavigate?: boolean}} [options] - Optional configuration
+ * @param {boolean} [options.shouldNavigate=true] - Whether to navigate to toolUrl (default true)
  * @returns {Promise<void>}
  */
-export const grantAccessIfNeeded = async (page, context, toolUrl) => {
-  await page.goto(toolUrl)
+export const grantAccessIfNeeded = async (page, context, toolUrl, options = {}) => {
+  const { shouldNavigate = true } = options
+  if (shouldNavigate) {
+    await page.goto(toolUrl)
+  }
   const ltiToolFrame = getLtiIFrame(page)
 
   // wait for tool-support loading page
@@ -126,4 +131,23 @@ function normalizeUrlParts(host, path) {
 function buildTestUrl(host, path) {
   const { host: normalizedHost, path: normalizedPath } = normalizeUrlParts(host, path)
   return `${normalizedHost}/${normalizedPath}`
+}
+
+/**
+ * Dismiss the OneTrust cookie dialog by accepting cookies if the banner appears.
+ * @param {import('@playwright/test').Page} page - Playwright page
+ * @param {number} [timeoutMs=3000] - Max wait for the dialog accept button
+ * @returns {Promise<void>}
+ */
+export const dismissCookieDialog = async (page, timeoutMs = 3000) => {
+  const dialog = page.getByRole('dialog', { name: 'Cookie Settings' })
+  const acceptButton = dialog.getByRole('button', { name: 'Accept' }).first()
+  const canAccept = await acceptButton
+    .waitFor({ state: 'visible', timeout: timeoutMs })
+    .then(() => { return true })
+    .catch(() => { return false })
+
+  if (canAccept) {
+    await acceptButton.click()
+  }
 }
