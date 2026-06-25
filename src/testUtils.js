@@ -17,11 +17,13 @@ export const TEST_URL = buildTestUrl(
  *
  * @param {import('@playwright/test').Page} page - Playwright page instance
  * @param {import('@playwright/test').BrowserContext} context - Playwright browser context
- * @param {string} toolUrl - URL of the LTI tool to visit
+ * @param {string} [toolUrl] - Optional URL of the LTI tool to visit
  * @returns {Promise<void>}
  */
 export const grantAccessIfNeeded = async (page, context, toolUrl) => {
-  await page.goto(toolUrl)
+  if (toolUrl) {
+    await page.goto(toolUrl)
+  }
   const ltiToolFrame = getLtiIFrame(page)
 
   // wait for tool-support loading page
@@ -126,4 +128,20 @@ function normalizeUrlParts(host, path) {
 function buildTestUrl(host, path) {
   const { host: normalizedHost, path: normalizedPath } = normalizeUrlParts(host, path)
   return `${normalizedHost}/${normalizedPath}`
+}
+
+/**
+ * Register a Playwright locator handler that accepts the OneTrust cookie dialog
+ * whenever it appears on the page.
+ *
+ * Call this once per test/page in consumer setup (for example in `beforeEach`).
+ *
+ * @param {import('@playwright/test').Page} page - Playwright page
+ * @returns {Promise<void>}
+ */
+export const registerCookieDialogHandler = async (page) => {
+  const dialog = page.getByRole('dialog', { name: 'Cookie Settings' })
+  await page.addLocatorHandler(dialog, async () => {
+    await dialog.getByRole('button', { name: 'Accept' }).first().click()
+  })
 }
