@@ -141,13 +141,17 @@ function buildTestUrl(host, path) {
  */
 export const dismissCookieDialog = async (page, timeoutMs = 3000) => {
   const dialog = page.getByRole('dialog', { name: 'Cookie Settings' })
-  const acceptButton = dialog.getByRole('button', { name: 'Accept' }).first()
-  const canAccept = await acceptButton
+  const dialogVisible = await dialog
     .waitFor({ state: 'visible', timeout: timeoutMs })
     .then(() => { return true })
     .catch(() => { return false })
 
-  if (canAccept) {
+  if (!dialogVisible) {
+    return
+  }
+
+  const acceptButton = dialog.getByRole('button', { name: 'Accept' }).first()
+  if (await acceptButton.isVisible()) {
     await acceptButton.click()
   }
 }
