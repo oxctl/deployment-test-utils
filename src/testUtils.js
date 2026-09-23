@@ -53,7 +53,7 @@ export const grantAccessIfNeeded = async (page, context, toolUrl) => {
  * @param {import('@playwright/test').FrameLocator} frameLocator - Locator for the LTI frame
  * @returns {Promise<void>}
  */
-const grantAccess = async (context, frameLocator) => {
+export const grantAccess = async (context, frameLocator) => {
   const button = await frameLocator.getByRole('button')
   const [newPage] = await Promise.all([
     context.waitForEvent('page'),
