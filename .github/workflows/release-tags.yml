@@ -31,6 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Release
-        uses: softprops/action-gh-release@1c214ab373197cfdedb8c44482a8faf4608192d7
+        uses: softprops/action-gh-release@b5a645e6d7f681d09866ab86ba7918b222989555
         with:
           generate_release_notes: true
